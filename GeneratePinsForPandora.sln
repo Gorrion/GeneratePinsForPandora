@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneratePinsForPandora", "GeneratePinsForPandora\GeneratePinsForPandora.csproj", "{279A1714-553C-4E83-94CF-1A2702D56AEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{279A1714-553C-4E83-94CF-1A2702D56AEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{279A1714-553C-4E83-94CF-1A2702D56AEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{279A1714-553C-4E83-94CF-1A2702D56AEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{279A1714-553C-4E83-94CF-1A2702D56AEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
