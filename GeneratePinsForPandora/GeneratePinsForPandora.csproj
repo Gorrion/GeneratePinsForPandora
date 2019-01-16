@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\GenCards.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -56,7 +57,73 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Lib\" />
+    <Content Include="Resource\Fonts\Dalton Maag - Soleto Black.ttf" />
+    <Content Include="Resource\Fonts\Dalton Maag - Soleto Bold.ttf" />
+    <Content Include="Resource\Fonts\Dalton Maag - Soleto Italic.ttf" />
+    <Content Include="Resource\Fonts\Dalton Maag - Soleto Light.ttf" />
+    <Content Include="Resource\Fonts\Dalton Maag - Soleto Thin.ttf" />
+    <Content Include="Resource\Fonts\Dalton Maag - Soleto.ttf" />
+    <Content Include="Resource\Fonts\Muller Light.otf" />
+    <Content Include="Resource\Fonts\Muller Medium.otf" />
+    <Content Include="Resource\Img\card_back\imo_cmiit.png" />
+    <Content Include="Resource\Img\card_back\imo_cmiit0.png" />
+    <Content Include="Resource\Img\card_back\imo_coworking.png" />
+    <Content Include="Resource\Img\card_back\imo_kids.png" />
+    <Content Include="Resource\Img\card_back\imo_special.png" />
+    <Content Include="Resource\Img\card_back\imo_technopark.png" />
+    <Content Include="Resource\Img\card_back\imo_technopark0.png" />
+    <Content Include="Resource\Img\card_back\photo_2018-09-10_17-36-37.jpg" />
+    <Content Include="Resource\Img\districts\cao.png" />
+    <Content Include="Resource\Img\districts\moscow.png" />
+    <Content Include="Resource\Img\districts\novomosk.png" />
+    <Content Include="Resource\Img\districts\sao.png" />
+    <Content Include="Resource\Img\districts\svao.png" />
+    <Content Include="Resource\Img\districts\szao.png" />
+    <Content Include="Resource\Img\districts\troitsk.png" />
+    <Content Include="Resource\Img\districts\uao.png" />
+    <Content Include="Resource\Img\districts\uvao.png" />
+    <Content Include="Resource\Img\districts\uzao.png" />
+    <Content Include="Resource\Img\districts\vao.png" />
+    <Content Include="Resource\Img\districts\zao.png" />
+    <Content Include="Resource\Img\districts\zel.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Аудитория.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Банк.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Библиотека.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Бизнес_инкубатор.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Большой_зал.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Выставочный_зал.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Дата-центр.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Детская_игровая_комната.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Детский_технопарк.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Инжиниринговый_центр.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Кафе.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Коворкинг.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Конгресс-холл.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Конференц_зал.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Лекторий.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Логистический_центр.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Малый_зал.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Парковки.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Переговорные_комнаты.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Политехнический_музей.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Ресторан.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Спортивный_зал.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Столовая.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Типография.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Центр_коллективного_пользования.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Центр_молодежного_инновационного_творчества.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Центр_прототипирования.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Центр_сертификации.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Центр_услуг_для_бизнеса.png" />
+    <Content Include="Resource\Img\infrastructure_icons\Чистые_помещения.png" />
+    <Content Include="Resource\Img\pins\cmiit.png" />
+    <Content Include="Resource\Img\pins\coworking.png" />
+    <Content Include="Resource\Img\pins\kids.png" />
+    <Content Include="Resource\Img\pins\special.png" />
+    <Content Include="Resource\Img\pins\technopark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resource\Img" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
