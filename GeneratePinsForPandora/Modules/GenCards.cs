@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Xml;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using GeneratePinsForPandora.Be;
@@ -16,7 +18,6 @@ using ReqSender.Lib;
 
 namespace GeneratePinsForPandora.Modules
 {
-
     public class GenCards
     {
         public Dictionary<string, string> Regions = new Dictionary<string, string>()
@@ -44,6 +45,7 @@ namespace GeneratePinsForPandora.Modules
         private const int EducationalProgramId = 71;
 
         private static readonly Dictionary<int, DictionaryData> DictData = new Dictionary<int, DictionaryData>();
+
         private static void FillDictData(List<DictionaryData> lst, int? parentId = null)
         {
             if (lst == null) return;
@@ -59,18 +61,26 @@ namespace GeneratePinsForPandora.Modules
         public static async Task GenerateAsync()
         {
             var dicts = await GetDictsAsync();
-            if (dicts == null) { Console.WriteLine("Ошибка получения словарей"); return; }
+            if (dicts == null)
+            {
+                Console.WriteLine("Ошибка получения словарей");
+                return;
+            }
+
             FillDictData(dicts.Data);
 
-            foreach (InnoTypes tp in Enum.GetValues(typeof(InnoTypes)))
+
+            await GenTypeCardsAsync(InnoTypes.Coworking);
+            /*foreach (InnoTypes tp in Enum.GetValues(typeof(InnoTypes)))
             {
                 await GenTypeCardsAsync(tp);
-            }
+                return;
+            }*/
         }
 
         private static async Task GenTypeCardsAsync(InnoTypes tp)
         {
-            var typeCargs = await GetInnoTypeInfoAsync((int)tp);
+            var typeCargs = await GetInnoTypeInfoAsync((int) tp);
             if (typeCargs == null) return;
             var listTsk = new List<Task<Datum>>();
 
@@ -78,7 +88,7 @@ namespace GeneratePinsForPandora.Modules
             {
                 if (el.Id != 125330) continue;
                 listTsk.Add(DrawCardAsync(el, tp));
-                return;
+                break;
             }
 
             await Task.WhenAll(listTsk);
@@ -96,61 +106,76 @@ namespace GeneratePinsForPandora.Modules
                 var tpName = Enum.GetName(typeof(InnoTypes), tp).ToLower();
                 var bkPath = string.Join(Path.DirectorySeparatorChar.ToString(),
                     new[] {"Resource", "Img", "card_back", $"imo_{tpName}.png"});
-                
-                if (!File.Exists(bkPath)) { Console.WriteLine($"Нет ресурсов - бекграунд {tpName}"); }
+
+                if (!File.Exists(bkPath))
+                {
+                    Console.WriteLine($"Нет ресурсов - бекграунд {tpName}");
+                }
 
                 using (var bg = Image.FromFile(bkPath))
+                using (var bmp = new Bitmap(bg.Width, bg.Height, PixelFormat.Format32bppPArgb))
                 {
-                    using (Graphics graphics = Graphics.FromImage(bg))
+                    using (Graphics graphics = Graphics.FromImage(bmp))
                     {
+                        graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                        
+                        graphics.DrawImage(bg, 0, 0);
                         graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
-                        DrawText(cardData.Name, graphics, 66, 345, 655, 650, 200);
+                        DrawText(cardData.Name, graphics, 42, 345, 655, 650, 200);
 
-                        DrawText(cardData.Website, graphics, 18, 375, 895, 650, 50);
-                        DrawText(cardData.Email, graphics, 18, 375, 920, 650, 50);
-                        DrawText(cardData.Phone, graphics, 18, 375, 955, 650, 50);
-                        DrawText(cardData.Address, graphics, 18, 375, 1005, 650, 80);
+                        DrawText(cardData.Website, graphics, 16, 375, 875, 650, 50, fontStyle: FontStyle.Bold);
+                        DrawText(cardData.Email, graphics, 16, 375, 912, 650, 50, fontStyle: FontStyle.Bold);
+                        DrawText(cardData.Phone, graphics, 16, 375, 948, 650, 50, fontStyle: FontStyle.Bold);
+                        DrawText(cardData.Address, graphics, 16, 375, 1000, 650, 80, fontStyle: FontStyle.Bold);
 
                         var photos = cardData?.Data?.Photos ?? new List<PhotoInfo>();
-                        for (var i = 0; i < photos.Count && i < 3; i++)
+                        for (var i = 0; i < photos.Count && i < 4; i++)
                         {
                             var img = LoadImg(photos[i].ImageUrl);
 
                             if (i == 0) graphics.DrawImage(img, 1009, 595, 522, 307);
-                            else if (i == 2) graphics.DrawImage(img, 1009 + i * (150 + 186), 936, 150, 100);
+                            else graphics.DrawImage(img, 1009 + (i - 1) * (150 + 36), 936, 150, 100);
                         }
 
-                        var dicts = cardData?.BaseDictionaries ?? new List<BaseDictionary>();
+                        var dicts = (cardData?.BaseDictionaries ?? new List<BaseDictionary>())
+                            .Where(x => DictData.ContainsKey(x.DictionaryID))
+                            .Select(x => DictData[x.DictionaryID])
+                            .ToList();
+
                         var countInRow = 3;
-                        var infrastructures = dicts.Where(x => x.DictionaryID == SharedUseInfrastructureId || x.DictionaryID == SocialInfrastructureId).ToList();
+                        var infrastructures = dicts.Where(x =>
+                                x.ParentId == SharedUseInfrastructureId || x.ParentId == SocialInfrastructureId)
+                            .ToList();
+
                         for (var i = 0; i < infrastructures.Count && i < 6; i++)
                         {
                             var cell = (Math.Abs(i * countInRow) + i) % countInRow;
-                            var row = i % countInRow;
+                            var row = i / countInRow;
 
                             var el = infrastructures[i];
-                            if (!DictData.ContainsKey(el.DictionaryID)) continue;
-                            var dictEl = DictData[el.DictionaryID];
                             var impPath = string.Join(Path.DirectorySeparatorChar.ToString(),
-                                new[] {"Resource", "Img", "infrastructure_icons", $"{dictEl.Name}.png"});
+                                new[] {"Resource", "Img", "infrastructure_icons", $"{el.Name.Replace(" ", "_")}.png"});
 
-                            if (!File.Exists(impPath)) { Console.WriteLine("Не найден файл инфраструктуры"); break; }
+                            if (!File.Exists(impPath))
+                            {
+                                Console.WriteLine("Не найден файл инфраструктуры");
+                                break;
+                            }
+
                             using (var img = Image.FromFile(impPath))
                             {
-                                graphics.DrawImage(img, 1005 + cell * (155), 1172 + row * (143), img.Width, img.Height);
+                                graphics.DrawImage(img, 1005 + cell * (176), 1172 + row * (135));
                             }
                         }
 
-                        var services = dicts.Where(x => x.DictionaryID == SpecializationId).ToList();
+                        var services = dicts.Where(x => x.ParentId == SpecializationId).ToList();
                         for (var i = 0; i < services.Count && i < 5; i++)
                         {
                             var el = infrastructures[i];
-                            if (DictData.ContainsKey(el.DictionaryID))
-                            {
-                                var dictEl = DictData[el.DictionaryID];
-                                DrawText(". " + dictEl.Name, graphics, 16, 1005, 1468 + i * (26), 650, 30);
-                            }
+                            DrawText(". " + el.Name, graphics, 16, 1005, 1468 + i * (26), 650, 30);
                         }
 
                         if (tp == InnoTypes.Coworking)
@@ -160,8 +185,10 @@ namespace GeneratePinsForPandora.Modules
 
                             var spaces = info
                                 .Where(x => !string.IsNullOrWhiteSpace(x.Name) && !string.IsNullOrWhiteSpace(x.ImgUrl))
-                                .OrderBy(x => x.Name)
-                                .GroupBy(x => x.Name.IndexOf("(") != -1 ? x.Name.Substring(0, x.Name.IndexOf("(")) : x.Name)
+                                .OrderBy(x => x.Name.ToLower())
+                                .GroupBy(x =>
+                                    (x.Name.IndexOf("(") != -1 ? x.Name.Substring(0, x.Name.IndexOf("(")) : x.Name)
+                                    .ToLower())
                                 .Select(x => x.First())
                                 .ToList();
 
@@ -170,29 +197,33 @@ namespace GeneratePinsForPandora.Modules
                                 var sp = spaces[i];
                                 var img = LoadImg(sp.ImgUrl);
 
-                                var xStart = 343 + i * (179 + 27);
-                                graphics.DrawImage(img, xStart, 1182, 179, 155);
-                                SolidBrush blueBrush = new SolidBrush(Color.FromArgb(227, 227, 227));
-                                graphics.FillRectangle(blueBrush, new Rectangle(xStart, 1337, 179, 34));
+                                var xStart = 343 + i * (240 + 27);
+                                graphics.DrawImage(img, xStart, 1182, 240, 156);
 
-                                DrawText(sp.Name.ToUpper(), graphics, 14, xStart + 10, 1350, 179, 34, Color.FromArgb(24, 62, 73));
+                                SolidBrush blueBrush = new SolidBrush(Color.FromArgb(227, 227, 227));
+                                graphics.FillRectangle(blueBrush, new Rectangle(xStart, 1337, 240, 34));
+
+                                DrawText(sp.Name.ToUpper(), graphics, 11, xStart + 10, 1345, 240, 34,
+                                    Color.FromArgb(24, 62, 73), FontStyle.Bold);
 
                                 if (string.IsNullOrWhiteSpace(sp.Price)) continue;
 
-                                DrawText("Стоимость (руб.)", graphics, 24, xStart, 1392, 179, 50);
-                                DrawText(sp.Price, graphics, 24, xStart, 1421, 179, 50, Color.FromArgb(245, 152, 45));
+                                DrawText("Стоимость (руб.)", graphics, 18, xStart, 1388, 240, 50);
+                                DrawText(sp.Price, graphics, 24, xStart, 1421, 240, 50, Color.FromArgb(245, 152, 45));
                             }
                         }
                     }
 
-                    if (!Directory.Exists("cards")) { Directory.CreateDirectory("cards"); }
-                    bg.Save(string.Join(Path.DirectorySeparatorChar.ToString(), 
-                        new[] {"cards", $"{cardData.Id}.png"}));
+                    if (!Directory.Exists("cards"))
+                    {
+                        Directory.CreateDirectory("cards");
+                    }
 
+                    bmp.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
+                        new[] {"cards", $"{cardData.Id}.png"}));
                 }
 
                 return cardData;
-
             }
             catch (Exception ex)
             {
@@ -245,13 +276,14 @@ namespace GeneratePinsForPandora.Modules
                 var desc = spacesDecs[i];
 
                 var descDict = spacesDecs[i].QuerySelectorAll("dl")
-                    ?.Select(x =>
+                    .Select(x =>
                     {
                         var val = x.GetElementsByTagName("dd").FirstOrDefault();
                         return new
                         {
                             key = x.GetElementsByTagName("dt").FirstOrDefault()?.InnerHtml?.ToLower(),
-                            value = val != null && !val.HasChildNodes ? (object)val.InnerHtml : val.ChildNodes.Select(c => c.Text()).ToArray(),
+                            value = val?.InnerHtml ??
+                                    "" // val != null && !val.HasChildNodes ? (object)val.InnerHtml : val.ChildNodes.Select(c => c.Text()).ToArray(),
                         };
                     })
                     .Where(x => !string.IsNullOrWhiteSpace(x.key))
@@ -265,7 +297,7 @@ namespace GeneratePinsForPandora.Modules
                     ImgUrl = spacesDecs[i].QuerySelector(".img-fluid")?.GetAttribute("src"),
                     Price = descDict.ContainsKey("стоимость (руб.)") ? descDict["стоимость (руб.)"] as string : null,
                     SpaceCount = descDict.ContainsKey("количество мест") ? descDict["количество мест"] as string : null,
-                    Worksheet = descDict.ContainsKey("рабочие дни") ? descDict["рабочие дни"] as List<string> : null,
+                    //Worksheet = descDict.ContainsKey("рабочие дни") ? descDict["рабочие дни"] as List<string> : null,
                 };
                 result.Add(spaceInfo);
             }
@@ -273,10 +305,12 @@ namespace GeneratePinsForPandora.Modules
             return result;
         }
 
-        private static void DrawText(string text, Graphics graphics, int fontSize, int x, int y, int width, int height, Color? color = null)
+        private static void DrawText(string text, Graphics graphics, int fontSize, int x, int y, int width, int height,
+            Color? color = null, FontStyle? fontStyle = null)
         {
             var fontColor = color ?? Color.White;
-            using (var font = new Font("/Assets/Resource/Fonts/Muller_Medium.otf#Muller Medium", fontSize))
+            using (var font = new Font("/Assets/Resource/Fonts/Muller_Medium.otf#Muller Medium", fontSize,
+                fontStyle ?? FontStyle.Regular))
             using (var foreBrush = new SolidBrush(fontColor))
             {
                 RectangleF rectF1 = new RectangleF(x, y, width, height);
@@ -293,6 +327,24 @@ namespace GeneratePinsForPandora.Modules
                 return Image.FromStream(stream);
             }
         }
-
+        
+       /* private Bitmap ImageAdditions(Bitmap image, Bitmap image2)
+        {           
+            Bitmap bmp = new Bitmap(image.Width, image.Height);
+            Color im, fon;
+            int iR, iG, iB;
+            for (int i = 0; i < bmp.Width; i++)
+            for (int j = 0; j < bmp.Height; j++)
+            {
+                fon = image2.GetPixel(i, j);
+                im = image.GetPixel(i, j);
+                iR = fon.R * (255 - im.A) / 255 + im.R * im.A / 255;
+                iG = fon.G * (255 - im.A) / 255 + im.G * im.A / 255;
+                iB = fon.B * (255 - im.A) / 255 + im.B * im.A / 255;
+                bmp.SetPixel(i, j, Color.FromArgb(Math.Max(fon.A, im.A), iR * (255 - fon.A) / 255 + fon.R * fon.A / 255, iG * (255 - fon.A) / 255 + fon.G * fon.A / 255, iB * (255 - fon.A) / 255 + fon.B * fon.A / 255));
+                    
+            }
+            return bmp;
+        }*/
     }
 }

@@ -42,6 +42,10 @@
     <Reference Include="PostSender">
       <HintPath>DllLib\PostSender.dll</HintPath>
     </Reference>
+    <Reference Include="ReqSender, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\ReqSender_gorrion.0.1.5\lib\netstandard2.0\ReqSender.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
