@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.10.1.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.10.1\lib\net46\AngleSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -45,9 +48,19 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Be\Model\BaseDictionary.cs" />
+    <Compile Include="Be\Model\BaseResponce.cs" />
+    <Compile Include="Be\Model\Datum.cs" />
+    <Compile Include="Be\Model\DatumExt.cs" />
+    <Compile Include="Be\Model\FormatSpace.cs" />
+    <Compile Include="Be\Model\PartnersProgramm.cs" />
+    <Compile Include="Be\Model\PhotoInfo.cs" />
+    <Compile Include="Be\InnoTypes.cs" />
+    <Compile Include="Be\Model\Seo.cs" />
     <Compile Include="Modules\GenCards.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,65 +78,177 @@
     <Content Include="Resource\Fonts\Dalton Maag - Soleto.ttf" />
     <Content Include="Resource\Fonts\Muller Light.otf" />
     <Content Include="Resource\Fonts\Muller Medium.otf" />
-    <Content Include="Resource\Img\card_back\imo_cmiit.png" />
-    <Content Include="Resource\Img\card_back\imo_cmiit0.png" />
-    <Content Include="Resource\Img\card_back\imo_coworking.png" />
-    <Content Include="Resource\Img\card_back\imo_kids.png" />
-    <Content Include="Resource\Img\card_back\imo_special.png" />
-    <Content Include="Resource\Img\card_back\imo_technopark.png" />
-    <Content Include="Resource\Img\card_back\imo_technopark0.png" />
-    <Content Include="Resource\Img\card_back\photo_2018-09-10_17-36-37.jpg" />
-    <Content Include="Resource\Img\districts\cao.png" />
-    <Content Include="Resource\Img\districts\moscow.png" />
-    <Content Include="Resource\Img\districts\novomosk.png" />
-    <Content Include="Resource\Img\districts\sao.png" />
-    <Content Include="Resource\Img\districts\svao.png" />
-    <Content Include="Resource\Img\districts\szao.png" />
-    <Content Include="Resource\Img\districts\troitsk.png" />
-    <Content Include="Resource\Img\districts\uao.png" />
-    <Content Include="Resource\Img\districts\uvao.png" />
-    <Content Include="Resource\Img\districts\uzao.png" />
-    <Content Include="Resource\Img\districts\vao.png" />
-    <Content Include="Resource\Img\districts\zao.png" />
-    <Content Include="Resource\Img\districts\zel.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Аудитория.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Банк.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Библиотека.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Бизнес_инкубатор.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Большой_зал.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Выставочный_зал.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Дата-центр.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Детская_игровая_комната.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Детский_технопарк.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Инжиниринговый_центр.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Кафе.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Коворкинг.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Конгресс-холл.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Конференц_зал.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Лекторий.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Логистический_центр.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Малый_зал.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Парковки.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Переговорные_комнаты.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Политехнический_музей.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Ресторан.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Спортивный_зал.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Столовая.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Типография.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Центр_коллективного_пользования.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Центр_молодежного_инновационного_творчества.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Центр_прототипирования.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Центр_сертификации.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Центр_услуг_для_бизнеса.png" />
-    <Content Include="Resource\Img\infrastructure_icons\Чистые_помещения.png" />
-    <Content Include="Resource\Img\pins\cmiit.png" />
-    <Content Include="Resource\Img\pins\coworking.png" />
-    <Content Include="Resource\Img\pins\kids.png" />
-    <Content Include="Resource\Img\pins\special.png" />
-    <Content Include="Resource\Img\pins\technopark.png" />
+    <Content Include="Resource\Img\card_back\imo_cmiit.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\card_back\imo_cmiit0.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\card_back\imo_coworking.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\card_back\imo_kids.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\card_back\imo_special.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\card_back\imo_technopark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\card_back\imo_technopark0.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\card_back\photo_2018-09-10_17-36-37.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\cao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\moscow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\novomosk.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\sao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\svao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\szao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\troitsk.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\uao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\uvao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\uzao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\vao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\zao.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\districts\zel.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Аудитория.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Банк.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Библиотека.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Бизнес_инкубатор.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Большой_зал.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Выставочный_зал.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Дата-центр.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Детская_игровая_комната.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Детский_технопарк.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Инжиниринговый_центр.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Кафе.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Коворкинг.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Конгресс-холл.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Конференц_зал.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Лекторий.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Логистический_центр.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Малый_зал.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Парковки.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Переговорные_комнаты.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Политехнический_музей.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Ресторан.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Спортивный_зал.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Столовая.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Типография.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Центр_коллективного_пользования.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Центр_молодежного_инновационного_творчества.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Центр_прототипирования.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Центр_сертификации.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Центр_услуг_для_бизнеса.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\infrastructure_icons\Чистые_помещения.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\pins\cmiit.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\pins\coworking.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\pins\kids.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\pins\special.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\pins\technopark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resource\Img" />
+    <Folder Include="Be\Responce\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
