@@ -33,8 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AngleSharp, Version=0.10.1.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
-      <HintPath>..\packages\AngleSharp.0.10.1\lib\net46\AngleSharp.dll</HintPath>
+    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.9.11\lib\net45\AngleSharp.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -57,12 +57,14 @@
     <Compile Include="Be\Model\BaseResponce.cs" />
     <Compile Include="Be\Model\Datum.cs" />
     <Compile Include="Be\Model\DatumExt.cs" />
+    <Compile Include="Be\Model\District.cs" />
     <Compile Include="Be\Model\FormatSpace.cs" />
     <Compile Include="Be\Model\PartnersProgramm.cs" />
     <Compile Include="Be\Model\PhotoInfo.cs" />
     <Compile Include="Be\InnoTypes.cs" />
     <Compile Include="Be\Model\Seo.cs" />
     <Compile Include="Modules\GenCards.cs" />
+    <Compile Include="Modules\GenPins.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -71,6 +73,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resource\Data\Regions.js" />
     <Content Include="Resource\Fonts\Dalton Maag - Soleto Black.ttf" />
     <Content Include="Resource\Fonts\Dalton Maag - Soleto Bold.ttf" />
     <Content Include="Resource\Fonts\Dalton Maag - Soleto Italic.ttf" />
