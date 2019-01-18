@@ -1,4 +1,6 @@
-﻿using GeneratePinsForPandora.Be.Model;
+﻿using GeneratePinsForPandora.Be;
+using GeneratePinsForPandora.Be.Model;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,14 @@ namespace GeneratePinsForPandora.Modules
 {
     public class GenPins
     {
+
+        public static async Task Genegare(Dictionary<InnoTypes, List<Datum>> data)
+        {
+           
+
+
+
+        }
 
 //        public static GetObjAreaName(Datum obj, areas)
 //        {

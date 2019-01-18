@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,10 +15,35 @@ namespace GeneratePinsForPandora.Be.Model
         public string Name { get; set; }
         public string Code { get; set; }
         public int Level { get; set; }
+        public double[][] Points { get; set; }
     }
 
     public static class Districts
     {
+        static Districts()
+        {
+            var regionsJson = JObject.Parse(Resource.DtaResource.Regions);
+            foreach (var reg in regionsJson)
+            {
+                var dist = Moscow.FirstOrDefault(d => d.Id.ToString() == reg.Key?.ToString());
+                if (dist != null && reg.Value != null && reg.Value["raw_coordinates"] is JArray)
+                {
+                    foreach (var aEl in reg.Value["raw_coordinates"])
+                    {
+
+                    }
+                    dist.Points = reg.Value["raw_coordinates"]
+                        .Select(x => x as JArray)
+                        .Where(x => x != null && x.Count == 2)
+                        .Select(x=> x[0].Cast<double>().ToArray())
+                        .ToArray();
+                    //var tt = 99;
+                    //if (dist[""])
+
+                }
+            }
+        }
+
         public static List<District> Moscow = new List<District>
         {
            new District {

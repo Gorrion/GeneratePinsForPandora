@@ -1,6 +1,9 @@
-﻿using GeneratePinsForPandora.Modules;
+﻿using GeneratePinsForPandora.Be.Model;
+using GeneratePinsForPandora.Modules;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace GeneratePinsForPandora
 {
@@ -10,7 +13,10 @@ namespace GeneratePinsForPandora
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            GenCards.GenerateAsync().Wait();
+            var tt = Districts.Moscow;
+
+
+           // GenCards.GenerateAsync().Wait();
 
             stopwatch.Stop();
             Console.WriteLine(stopwatch.ElapsedMilliseconds);

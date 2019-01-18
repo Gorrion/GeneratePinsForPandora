@@ -67,6 +67,11 @@
     <Compile Include="Modules\GenPins.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource\DtaResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DtaResource.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -253,6 +258,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Be\Responce\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\DtaResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DtaResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
