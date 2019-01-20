@@ -22,23 +22,6 @@ namespace GeneratePinsForPandora.Modules
 {
     public class GenCards
     {
-        //public static Dictionary<string, string> Regions = new Dictionary<string, string>()
-        //{
-        //    {"moscow", "Москва"},
-        //    {"sao", "Северный административный округ"},
-        //    {"zao", "Западный административный округ"},
-        //    {"szao", "Северо-Западный административный округ"},
-        //    {"svao", "Северо-Восточный административный округ"},
-        //    {"uvao", "Юго-Восточный административный округ"},
-        //    {"uao", "Южный административный округ"},
-        //    {"uzao", "Юго-Западный административный округ"},
-        //    {"vao", "Восточный административный округ"},
-        //    {"zel", "Зеленоград"},
-        //    {"cao", "Центральный административный округ"},
-        //    {"novomosk", "Новомосковский административный округ"},
-        //    {"troitsk", "Троицкий административный округ"}
-        //};
-
         private const int SpecializationId = 68;
         private const int SharedUseInfrastructureId = 48;
         private const int SocialInfrastructureId = 62;
@@ -60,42 +43,31 @@ namespace GeneratePinsForPandora.Modules
             }
         }
 
-        public static async Task GenerateAsync()
+        public static async Task<List<Datum>> GenerateAsync()
         {
             var dicts = await GetDictsAsync();
             if (dicts == null)
             {
                 Console.WriteLine("Ошибка получения словарей");
-                return;
+                return null;
             }
 
             FillDictData(dicts.Data);
 
-            var allCards = new Dictionary<InnoTypes, List<Datum>>();
+            var allCards = new List<Datum>();
             foreach (InnoTypes tp in Enum.GetValues(typeof(InnoTypes)))
             {
-                allCards[tp] = await GenTypeCardsAsync(tp);
+                var cards = await GenTypeCardsAsync(tp);
+                allCards.AddRange(cards);
                 break;
             }
 
-            var forFile = allCards.SelectMany(x => x.Value.Select(c => new {
-                id = c.Id,
-                name = c.Name,
-                tp = x.Key.ToString().ToLower(),
-                //area = Districts.Moscow.FirstOrDefault(d=> d.Id ==c.RegionID || d.Id == c.DistrictID)?.Name
-            })).ToList();
-
-            //var br = allCards.Values.SelectMany(x => x.Select(y => y)).Where(x => x != null).GroupBy(x => x.RegionID)
-            //    .ToDictionary(x => x.Key, y => y.ToList());
-
-            //var bA = allCards.Values.SelectMany(x => x.Select(y => y)).Where(x => x != null).GroupBy(x => x.DistrictID)
-            //    .ToDictionary(x => x.Key, y => y.ToList());
-            //var yyy = 5555;
+            return allCards;
         }
 
         private static async Task<List<Datum>> GenTypeCardsAsync(InnoTypes tp)
         {
-            var typeCargs = await GetInnoTypeInfoAsync((int)tp);
+            var typeCargs = await GetInnoTypeInfoAsync((int) tp);
             if (typeCargs == null) return null;
             var listTsk = new List<Task<Datum>>();
 
@@ -113,24 +85,25 @@ namespace GeneratePinsForPandora.Modules
         {
             try
             {
+                return cardBase;
+                
                 var cardResponce = await GetObjDataAsync(cardBase.Id);
                 var cardData = cardResponce?.Data;
 
                 if (cardData == null) return null;
+                if (tp == InnoTypes.Technopark && cardResponce.Data.TechnoparkStatusID != 4702) return null;
 
                 var tpName = Enum.GetName(typeof(InnoTypes), tp).ToLower();
-                var bkPath = string.Join(Path.DirectorySeparatorChar.ToString(),
-                    new[] { "Resource", "Img", "card_back", $"imo_{tpName}.png" });
+                var bgPath = string.Join(Path.DirectorySeparatorChar.ToString(),
+                    new[] {"Resource", "Img", "card_back", $"imo_{tpName}.png"});
 
-                return cardData;
-
-                if (!File.Exists(bkPath))
+                if (!File.Exists(bgPath))
                 {
                     Console.WriteLine($"Нет ресурсов - бекграунд {tpName}");
                 }
 
-                using (var bg = Image.FromFile(bkPath))
-                //  using (var bmp = new Bitmap(bg.Width, bg.Height, PixelFormat.Format32bppPArgb))
+                using (var bg = Image.FromFile(bgPath))
+                    //  using (var bmp = new Bitmap(bg.Width, bg.Height, PixelFormat.Format32bppPArgb))
                 {
                     using (Graphics graphics = Graphics.FromImage(bg))
                     {
@@ -175,7 +148,10 @@ namespace GeneratePinsForPandora.Modules
 
                                 var el = infrastructures[i];
                                 var impPath = string.Join(Path.DirectorySeparatorChar.ToString(),
-                                    new[] { "Resource", "Img", "infrastructure_icons", $"{el.Name.Replace(" ", "_")}.png" });
+                                    new[]
+                                    {
+                                        "Resource", "Img", "infrastructure_icons", $"{el.Name.Replace(" ", "_")}.png"
+                                    });
 
                                 if (!File.Exists(impPath))
                                 {
@@ -194,17 +170,20 @@ namespace GeneratePinsForPandora.Modules
                             for (var i = 0; i < specialization.Count && i < 5; i++)
                             {
                                 var el = specialization[i];
-                                DrawText(el.Name, graphics, 11, 644, 1176 + i * (28), 200, 30, Color.FromArgb(130, 130, 130));
+                                DrawText(el.Name, graphics, 11, 644, 1176 + i * (28), 200, 30,
+                                    Color.FromArgb(130, 130, 130));
                             }
                         }
                         {
-                            var services = dicts.Where(x => x.ParentId == ServicesForResidentsId).OrderBy(x => x.Id).ToList();
+                            var services = dicts.Where(x => x.ParentId == ServicesForResidentsId).OrderBy(x => x.Id)
+                                .ToList();
                             for (var i = 0; i < services.Count && i < 5; i++)
                             {
                                 if (i == 0)
                                 {
                                     DrawText("Сервисы", graphics, 18, 1005, 1430, 200, 30);
                                 }
+
                                 var el = services[i];
                                 DrawText("• " + el.Name, graphics, 16, 1005, 1469 + i * (25), 600, 30);
                             }
@@ -251,7 +230,7 @@ namespace GeneratePinsForPandora.Modules
                     }
 
                     bg.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
-                        new[] { "cards", $"{cardData.Id}.png" }));
+                        new[] {"cards", $"{cardData.Id}.png"}));
                 }
 
                 return cardData;
@@ -294,11 +273,12 @@ namespace GeneratePinsForPandora.Modules
         }
 
         public static DateTime LastPageReqDate = DateTime.MinValue;
+
         private static async Task<List<FormatSpace>> GetFormatspacesAsync(int objId)
         {
             //var handler = new HttpClientHandler() { UseProxy = false };
             var url = $"http://imoscow.mos.ru/ru/infrastructure/object/detail/{objId}/formatspaces";
-            //if ((DateTime.Now - LastPageReqDate).TotalSeconds < 1) await Task.Delay(TimeSpan.FromSeconds(1));
+            if ((DateTime.Now - LastPageReqDate).TotalSeconds < 1) await Task.Delay(TimeSpan.FromSeconds(1));
             var res = await ReqController.SendRequestAsync(ReqType.GET, url);
             LastPageReqDate = DateTime.Now;
             //

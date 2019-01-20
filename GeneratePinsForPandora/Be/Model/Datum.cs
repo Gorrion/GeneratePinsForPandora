@@ -23,6 +23,7 @@ namespace GeneratePinsForPandora.Be.Model
         public double Lat { get; set; }
         public double Lon { get; set; }
         public int InnoObjectStatusID { get; set; }
+        public int TechnoparkStatusID { get; set; }
         public int DistrictID { get; set; }
         public int? RegionID { get; set; }
         public PhotoInfo Image { get; set; }

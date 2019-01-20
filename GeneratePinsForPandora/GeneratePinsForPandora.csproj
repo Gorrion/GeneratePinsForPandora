@@ -62,6 +62,7 @@
     <Compile Include="Be\Model\PartnersProgramm.cs" />
     <Compile Include="Be\Model\PhotoInfo.cs" />
     <Compile Include="Be\InnoTypes.cs" />
+    <Compile Include="Be\Model\PointD.cs" />
     <Compile Include="Be\Model\Seo.cs" />
     <Compile Include="Modules\GenCards.cs" />
     <Compile Include="Modules\GenPins.cs" />
@@ -255,9 +256,6 @@
     <Content Include="Resource\Img\pins\technopark.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Be\Responce\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource\DtaResource.resx">
