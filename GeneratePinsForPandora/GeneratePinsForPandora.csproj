@@ -63,9 +63,12 @@
     <Compile Include="Be\Model\PhotoInfo.cs" />
     <Compile Include="Be\InnoTypes.cs" />
     <Compile Include="Be\Model\PointD.cs" />
+    <Compile Include="Be\Model\Report.cs" />
     <Compile Include="Be\Model\Seo.cs" />
+    <Compile Include="Lib\GraphicsExt.cs" />
     <Compile Include="Modules\GenCards.cs" />
     <Compile Include="Modules\GenPins.cs" />
+    <Compile Include="Modules\GenReports.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource\DtaResource.Designer.cs">
@@ -255,6 +258,9 @@
     </Content>
     <Content Include="Resource\Img\pins\technopark.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\Img\reports\bg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

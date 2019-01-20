@@ -13,6 +13,7 @@ using AngleSharp.Dom;
 using AngleSharp.Parser.Html;
 using GeneratePinsForPandora.Be;
 using GeneratePinsForPandora.Be.Model;
+using GeneratePinsForPandora.Lib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReqSender.Be;
@@ -114,17 +115,17 @@ namespace GeneratePinsForPandora.Modules
                         //graphics.DrawImage(bg, 0, 0);
                         graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
-                        DrawText(cardData.Name, graphics, 42, 345, 655, 650, 200);
+                        graphics.DrawText(cardData.Name, 42, 345, 655, 650, 200);
 
-                        DrawText(cardData.Website, graphics, 16, 375, 883, 650, 50, fontStyle: FontStyle.Bold);
-                        DrawText(cardData.Email, graphics, 16, 375, 919, 650, 50, fontStyle: FontStyle.Bold);
-                        DrawText(cardData.Phone, graphics, 16, 375, 951, 650, 50, fontStyle: FontStyle.Bold);
-                        DrawText(cardData.Address, graphics, 16, 375, 1005, 650, 80, fontStyle: FontStyle.Bold);
+                        graphics.DrawText(cardData.Website, 16, 375, 883, 650, 50, fontStyle: FontStyle.Bold);
+                        graphics.DrawText(cardData.Email, 16, 375, 919, 650, 50, fontStyle: FontStyle.Bold);
+                        graphics.DrawText(cardData.Phone, 16, 375, 951, 650, 50, fontStyle: FontStyle.Bold);
+                        graphics.DrawText(cardData.Address, 16, 375, 1005, 650, 80, fontStyle: FontStyle.Bold);
 
                         var photos = cardData?.Data?.Photos ?? new List<PhotoInfo>();
                         for (var i = 0; i < photos.Count && i < 4; i++)
                         {
-                            var img = LoadImg(photos[i].ImageUrl);
+                            var img = GraphicsExt.LoadImg(photos[i].ImageUrl);
 
                             if (i == 0) graphics.DrawImage(img, 1009, 595, 522, 307);
                             else graphics.DrawImage(img, 1009 + (i - 1) * (150 + 36), 936, 150, 100);
@@ -170,7 +171,7 @@ namespace GeneratePinsForPandora.Modules
                             for (var i = 0; i < specialization.Count && i < 5; i++)
                             {
                                 var el = specialization[i];
-                                DrawText(el.Name, graphics, 11, 644, 1176 + i * (28), 200, 30,
+                                graphics.DrawText(el.Name, 11, 644, 1176 + i * (28), 200, 30,
                                     Color.FromArgb(130, 130, 130));
                             }
                         }
@@ -181,11 +182,11 @@ namespace GeneratePinsForPandora.Modules
                             {
                                 if (i == 0)
                                 {
-                                    DrawText("Сервисы", graphics, 18, 1005, 1430, 200, 30);
+                                    graphics.DrawText("Сервисы", 18, 1005, 1430, 200, 30);
                                 }
 
                                 var el = services[i];
-                                DrawText("• " + el.Name, graphics, 16, 1005, 1469 + i * (25), 600, 30);
+                                graphics.DrawText("• " + el.Name, 16, 1005, 1469 + i * (25), 600, 30);
                             }
                         }
                         if (tp == InnoTypes.Coworking)
@@ -205,7 +206,7 @@ namespace GeneratePinsForPandora.Modules
                             for (var i = 0; i < spaces.Count && i < 2; i++)
                             {
                                 var sp = spaces[i];
-                                var img = LoadImg(sp.ImgUrl);
+                                var img = GraphicsExt.LoadImg(sp.ImgUrl);
 
                                 var xStart = 343 + i * (240 + 27);
                                 graphics.DrawImage(img, xStart, 1182, 240, 156);
@@ -213,13 +214,13 @@ namespace GeneratePinsForPandora.Modules
                                 SolidBrush blueBrush = new SolidBrush(Color.FromArgb(227, 227, 227));
                                 graphics.FillRectangle(blueBrush, new Rectangle(xStart, 1337, 240, 34));
 
-                                DrawText(sp.Name.ToUpper(), graphics, 11, xStart + 10, 1345, 240, 34,
+                                graphics.DrawText(sp.Name.ToUpper(), 11, xStart + 10, 1345, 240, 34,
                                     Color.FromArgb(24, 62, 73), FontStyle.Bold);
 
                                 if (string.IsNullOrWhiteSpace(sp.Price)) continue;
 
-                                DrawText("Стоимость (руб.)", graphics, 18, xStart, 1388, 240, 50);
-                                DrawText(sp.Price, graphics, 24, xStart, 1421, 240, 50, Color.FromArgb(245, 152, 45));
+                                graphics.DrawText("Стоимость (руб.)", 18, xStart, 1388, 240, 50);
+                                graphics.DrawText(sp.Price, 24, xStart, 1421, 240, 50, Color.FromArgb(245, 152, 45));
                             }
                         }
                     }
@@ -325,27 +326,6 @@ namespace GeneratePinsForPandora.Modules
             return result;
         }
 
-        private static void DrawText(string text, Graphics graphics, int fontSize, int x, int y, int width, int height,
-            Color? color = null, FontStyle? fontStyle = null)
-        {
-            var fontColor = color ?? Color.White;
-            using (var font = new Font("/Assets/Resource/Fonts/Muller_Medium.otf#Muller Medium", fontSize,
-                fontStyle ?? FontStyle.Regular))
-            using (var foreBrush = new SolidBrush(fontColor))
-            {
-                RectangleF rectF1 = new RectangleF(x, y, width, height);
-                graphics.DrawString(text, font, foreBrush, rectF1);
-            }
-        }
 
-        private static Image LoadImg(string url)
-        {
-            var request = WebRequest.Create(url);
-            using (var response = request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            {
-                return Image.FromStream(stream);
-            }
-        }
     }
 }
