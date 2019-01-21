@@ -15,5 +15,6 @@ namespace GeneratePinsForPandora.Be.Model
         public int[] GrafB1 { get; set; }
         public int[] GrafB2 { get; set; }
         public double[] GrafC { get; set; }
+        public string[] GrafCT { get; set; }
     }
 }

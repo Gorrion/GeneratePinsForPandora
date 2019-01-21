@@ -66,6 +66,7 @@
     <Compile Include="Be\Model\Report.cs" />
     <Compile Include="Be\Model\Seo.cs" />
     <Compile Include="Lib\GraphicsExt.cs" />
+    <Compile Include="Lib\MathExt.cs" />
     <Compile Include="Modules\GenCards.cs" />
     <Compile Include="Modules\GenPins.cs" />
     <Compile Include="Modules\GenReports.cs" />

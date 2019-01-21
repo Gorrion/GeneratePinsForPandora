@@ -45,9 +45,10 @@ namespace GeneratePinsForPandora
                         },
                         GrafB1 = new [] { 1 },
                         GrafB2 = new [] { 1 },
-                        GrafC = new [] { 14.77, 17.05, 7.18, 4.77, 4.77, 2.39, 2.39, 4.77  },
-                        
-                        
+                        GrafC = new [] { 4.77, 2.39, 2.39, 4.77, 54.77, 19.05, 7.15, 4.77 },
+                        GrafCT = new [] {"Колледжи" , "Технопарки (научный парки академические парки)", "ВУЗ", "Другие",
+                            "Научные организации", "Организации по сертификации/Испытателные лаборатории",
+                            "Центры молодежного инновационного творчества", "Коворкинги" },
                     }
                 }).Wait();
             }
@@ -72,13 +73,13 @@ namespace GeneratePinsForPandora
             {
                 id = c.Id.ToString(),
                 name = c.Name,
-                tp = ((InnoTypes) c.InnoObjectTypeID).ToString().ToLower(),
+                tp = ((InnoTypes)c.InnoObjectTypeID).ToString().ToLower(),
                 distr = Districts.Moscow.Where(d => d.Code?.ToLower() != "moscow")
                     .FirstOrDefault(d => d.IsIn(c))?.Code
             }).ToList();
 
             File.WriteAllLines("_Tesho.txt",
-                forFile.Select(c => string.Join(" // ", new[] {c.distr, c.tp, c.id, c.name})));
+                forFile.Select(c => string.Join(" // ", new[] { c.distr, c.tp, c.id, c.name })));
         }
     }
 }

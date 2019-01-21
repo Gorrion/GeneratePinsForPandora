@@ -31,7 +31,7 @@ namespace GeneratePinsForPandora.Modules
         {
             var genType = "Report";
             var bgPath = string.Join(Path.DirectorySeparatorChar.ToString(),
-                new[] {"Resource", "Img", "reports", "bg.png"});
+                new[] { "Resource", "Img", "reports", "bg.png" });
 
             if (!File.Exists(bgPath))
             {
@@ -54,8 +54,8 @@ namespace GeneratePinsForPandora.Modules
                     graphics.DrawText($"1:{data.OneObjectPeopleCount}", 32, 593, 774);
                     graphics.DrawText(data.AvgPrice, 32, 593, 929);
 
-                    graphics.DrawText(data.Population, 32, 1014, 654);
-                    graphics.DrawText(data.PopulationDensity, 32, 1342, 654);
+                    graphics.DrawText(data.Population, 32, 1000, 635);
+                    graphics.DrawText(data.PopulationDensity, 32, 1342, 635);
 
                     var sLineX = 1010;
                     var eLineX = 1581;
@@ -96,23 +96,93 @@ namespace GeneratePinsForPandora.Modules
                         new Point(sLineX, sLineY), new Point(eLineX, sLineY));
 
                     //График 3 (Кругоыой)
+                    var topLeftX = 1170;
+                    var topLeftY = 1270;
+                    var width = 260;
+                    var radius = width / 2;
+
+                    var centr = new Point(topLeftX + width / 2, topLeftY + width / 2);
+
+                    graphics.DrawText("ОБЪЕКТЫ", 16,
+                        topLeftX + width / 2 - 20 * 3, topLeftY + width / 2 - 10,
+                        color: Color.FromArgb(217, 217, 217));
+
                     var sum = data.GrafC.Sum(); //100%
-                    float lastAngle = 0;
+                    var colorArr = new[] {
+                        Color.FromArgb(255, 46,46),
+                        Color.FromArgb(255, 69,69),
+                        Color.FromArgb(255,163,163),
+                        Color.FromArgb(255, 212,212),
+                        Color.FromArgb(33,81,255),
+                        Color.FromArgb(46,147,255),
+                        Color.FromArgb(130,130,141),
+                        Color.FromArgb(227, 240, 255),
+                    };
+
+
+                    float lastAngle = 0 - 90;
+                    var angleDx = 0;
                     for (var i = 0; i < data.GrafC.Length; i++)
                     {
+                        var colorInd = (Math.Abs(i * colorArr.Length) + i) % colorArr.Length;
+                        var color = colorArr[colorInd];//GraphicsExt.GetBlendedColor((int)procenrt);
+
                         var procenrt = data.GrafC[i] * 100.0 / sum;
 
-                        var color = GraphicsExt.GetBlendedColor((int)procenrt);
+                        var angle = (float)(360f * procenrt / 100);
 
-                        var angle = (float) (360f * procenrt / 100) ;
-                        graphics.Dyga(new Pen(color, 10), 1300, 1400, 122,  lastAngle, lastAngle + angle);
+                        //graphics.Dyga(new Pen(color, 10), 1300, 1400, 122,  lastAngle, lastAngle + angle);
+
+
+                        graphics.DrawArc(new Pen(color, 12), topLeftX, topLeftY, width, width, lastAngle, angle);
+
+
+                        //Подпись процентов
+                        //var txtX = (int)Math.Floor(radius * Math.Sin(lastAngle + 90));
+                        //var txtY = (int)Math.Floor(radius * Math.Cos(lastAngle + 90));
+                        //// graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
+                        //graphics.DrawLine(new Pen(color, 1), centr, new Point(centr.X - txtX, centr.Y - txtY));
+                        {
+                            var angleTxt = lastAngle + 90 + angle / 2;
+
+                            double angle2 = Math.PI * (lastAngle + 90 + angle / 2) / 180.0;
+                            var txtX = (int)(radius * Math.Sin(angle2));
+                            var txtY = (int)(radius * Math.Cos(angle2));
+
+                            //var txtX = Math.Sin((0 / 180D) * Math.PI); // (int)Math.Floor(radius * Math.Sin(0));
+                            //var txtY = (int)Math.Floor(radius * Math.Cos(0));
+                            // graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
+                            var pointOnCircle = new Point(centr.X + txtX, centr.Y - txtY);
+                            graphics.DrawLine(new Pen(color, 1), centr, pointOnCircle);
+
+                            //   if (angle > 20) angleDx = 0;
+
+                            var txtPoint = MathExt.GetPointOnLine(centr, pointOnCircle, radius + (angleTxt < 180 ? 25 : 50)); // (angle i % 2 == 0 ? 15 : 0));
+                            graphics.DrawText(procenrt.ToString("N2"), 12, txtPoint.X, txtPoint.Y, color: Color.Red);
+
+                            // if (angle < 20) angleDx += 15;
+
+                        }
+
+
+                        //{
+                        //    var txtX = (int)Math.Floor(radius * Math.Cos(90));
+                        //    var txtY = (int)Math.Floor(radius * Math.Sin(90));
+                        //    // graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
+                        //    graphics.DrawLine(new Pen(color, 1), centr, new Point(centr.X + txtX, centr.Y - txtY));
+                        //}
+
+                        //{
+                        //    var txtX = (int)Math.Floor(radius * Math.Cos(180));
+                        //    var txtY = (int)Math.Floor(radius * Math.Sin(180));
+                        //    // graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
+                        //    graphics.DrawLine(new Pen(color, 1), centr, new Point(centr.X + txtX, centr.Y - txtY));
+                        //}
+
                         lastAngle = lastAngle + angle;
                         //graphics.DrawCircle(new Pen(Color.FromArgb(33, 81, 255), 10), 1300, 1400, 122);
 
                     }
-                    
-                    
-
 
 
                     /*  foreach (var dt in data)
@@ -141,7 +211,7 @@ namespace GeneratePinsForPandora.Modules
                 }
 
                 bg.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
-                    new[] {"reports", $"{data.Area}_{data.Type}.png"}));
+                    new[] { "reports", $"{data.Area}_{data.Type}.png" }));
             }
         }
     }

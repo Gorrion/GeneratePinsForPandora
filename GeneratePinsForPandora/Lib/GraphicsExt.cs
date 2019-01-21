@@ -84,8 +84,8 @@ namespace GeneratePinsForPandora.Lib
         public static Color GetBlendedColor(int percentage)
         {
             if (percentage < 50)
-                return Interpolate(Color.Red, Color.Yellow, percentage / 50.0);
-            return Interpolate(Color.Blue, Color.Lime, (percentage - 50) / 50.0);
+                return Interpolate(Color.White, Color.Blue, percentage / 50.0);
+            return Interpolate(Color.Blue, Color.Red, (percentage - 50) / 50.0);
         }
 
         private static Color Interpolate(Color color1, Color color2, double fraction)
