@@ -133,9 +133,7 @@ namespace GeneratePinsForPandora.Modules
 
                         //graphics.Dyga(new Pen(color, 10), 1300, 1400, 122,  lastAngle, lastAngle + angle);
 
-
                         graphics.DrawArc(new Pen(color, 12), topLeftX, topLeftY, width, width, lastAngle, angle);
-
 
                         //Подпись процентов
                         //var txtX = (int)Math.Floor(radius * Math.Sin(lastAngle + 90));
@@ -143,9 +141,9 @@ namespace GeneratePinsForPandora.Modules
                         //// graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
                         //graphics.DrawLine(new Pen(color, 1), centr, new Point(centr.X - txtX, centr.Y - txtY));
                         {
-                            var angleTxt = lastAngle + 90 + angle / 2;
+                            var angleTxt = lastAngle + 90 + angle / 10;
 
-                            double angle2 = Math.PI * (lastAngle + 90 + angle / 2) / 180.0;
+                            double angle2 = Math.PI * angleTxt / 180.0;
                             var txtX = (int)(radius * Math.Sin(angle2));
                             var txtY = (int)(radius * Math.Cos(angle2));
 
@@ -158,8 +156,24 @@ namespace GeneratePinsForPandora.Modules
                             //   if (angle > 20) angleDx = 0;
 
                             var txtPoint = MathExt.GetPointOnLine(centr, pointOnCircle, radius + (angleTxt < 180 ? 25 : 50)); // (angle i % 2 == 0 ? 15 : 0));
-                            graphics.DrawText(procenrt.ToString("N2"), 12, txtPoint.X, txtPoint.Y, color: Color.Red);
 
+                            StringFormat format = new StringFormat();
+                            format.LineAlignment = StringAlignment.Center;
+                            format.Alignment = StringAlignment.Far;
+
+
+                            if (i == 0)
+                            {
+                                graphics.DrawText(procenrt.ToString("N2"), 12, txtPoint.X, txtPoint.Y, 200, 60, color: Color.Red);
+
+                                var title = data.GrafCT?[i];
+                                if (!string.IsNullOrWhiteSpace(title))
+                                {
+
+
+                                    graphics.DrawText(title, 9, txtPoint.X - 200, txtPoint.Y + 16, 200, 60, color: Color.FromArgb(65, 65, 65), format: format);
+                                }
+                            }
                             // if (angle < 20) angleDx += 15;
 
                         }

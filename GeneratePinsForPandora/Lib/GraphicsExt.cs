@@ -22,7 +22,7 @@ namespace GeneratePinsForPandora.Lib
 
         public static void DrawText(this Graphics graphics, string text, int fontSize, int x, int y,
             int width = 2100, int height = 2100,
-            Color? color = null, FontStyle? fontStyle = null)
+            Color? color = null, FontStyle? fontStyle = null, StringFormat format = null)
         {
             var fontColor = color ?? Color.White;
             using (var font = new Font("/Assets/Resource/Fonts/Muller_Medium.otf#Muller Medium", fontSize,
@@ -30,7 +30,7 @@ namespace GeneratePinsForPandora.Lib
             using (var foreBrush = new SolidBrush(fontColor))
             {
                 RectangleF rectF1 = new RectangleF(x, y, width, height);
-                graphics.DrawString(text, font, foreBrush, rectF1);
+                graphics.DrawString(text, font, foreBrush, rectF1, format: format ?? StringFormat.GenericDefault);
             }
         }
 
