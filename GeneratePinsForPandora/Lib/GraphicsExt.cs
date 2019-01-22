@@ -100,5 +100,23 @@ namespace GeneratePinsForPandora.Lib
         {
             return d1 + (d2 - d1) * fraction;
         }
+
+        private static Font FindBestFitFont(this Graphics g, String text, Font font, Size proposedSize)
+        {
+            // Compute actual size, shrink if needed
+            while (true)
+            {
+                SizeF size = g.MeasureString(text, font);
+
+                // It fits, back out
+                if (size.Height <= proposedSize.Height &&
+                     size.Width <= proposedSize.Width) { return font; }
+
+                // Try a smaller font (90% of old size)
+                Font oldFont = font;
+                font = new Font(font.Name, (float)(font.Size * .9), font.Style);
+                oldFont.Dispose();
+            }
+        }
     }
 }
