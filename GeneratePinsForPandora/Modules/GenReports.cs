@@ -121,8 +121,8 @@ namespace GeneratePinsForPandora.Modules
                                 LinearGradientBrush linGrBrush = new LinearGradientBrush(
                                    new Point(stX, eLineY - dy - 10),
                                    new Point(stX, eLineY + 10),
-                                   Color.FromArgb(100, 255, 255, 255),   // Opaque red
-                                   Color.FromArgb(0, 255, 255, 255));  // Opaque blue);
+                                   Color.FromArgb(100, 255, 255, 255), 
+                                   Color.FromArgb(0, 255, 255, 255));  
 
                                 Pen pen = new Pen(linGrBrush, 6);
                                 graphics.DrawLine(pen, new Point(stX, eLineY - dy), new Point(stX, eLineY));
@@ -135,10 +135,53 @@ namespace GeneratePinsForPandora.Modules
 
                     //График 2
                     {
-                        if (data.GrafB1.Length > 0 && data.GrafB2.Length > 0)
+                        var max = (data.GrafB1.Length > 0 ? data.GrafB1.Max() : 0) +
+                                  (data.GrafB2.Length > 0 ? data.GrafB2.Max() : 0);
+
+                        
+                        graphics.DrawText("211К", 10, 722, 1235, color: Color.Gray);
+                        graphics.DrawText("141К", 10, 722, 1284, color: Color.Gray);
+                        graphics.DrawText("70К", 10, 722, 1318, color: Color.Gray);
+
+                        
+                        var center = new Point(717, 1392);
+                        var angCount = 360 / 24;
+                        var radius = 160;
+
+                        var pointsWhite = data.GrafB1.Select((x, i) =>
                         {
-                            var max = (new[] { data.GrafB1.Max(), data.GrafB2.Max() }).Max();
-                        }
+                            var ang = angCount * i;
+                            var proc = (x * 100.0 / max) / 100 * radius;
+                            
+
+                            double angle2 = Math.PI * ang / 180.0;
+                            var txtX = (int)(radius * Math.Sin(angle2));
+                            var txtY = (int)(radius * Math.Cos(angle2));
+                            var pointOnCircle = new Point(center.X + txtX, center.Y - txtY);
+
+                            return MathExt.GetPointOnLine(center, pointOnCircle, (int)proc);
+                        });
+                        
+                        graphics.DrawPolygon(new Pen(Color.White, 2), pointsWhite.ToArray());
+                        
+                        var pointsRed = data.GrafB2.Select((x, i) =>
+                        {
+                            var ang = angCount * i;
+                            var proc = (x * 100.0 / max) / 100 * radius;
+                            
+
+                            double angle2 = Math.PI * ang / 180.0;
+                            var txtX = (int)(radius * Math.Sin(angle2));
+                            var txtY = (int)(radius * Math.Cos(angle2));
+                            var pointOnCircle = new Point(center.X + txtX, center.Y - txtY);
+
+                            return MathExt.GetPointOnLine(center, pointOnCircle, (int)proc);
+                        });
+                        
+                        graphics.DrawPolygon(new Pen(Color.Red, 2), pointsRed.ToArray());
+                        
+                    }
+
 
                     //График 3 (Кругоыой)
                     {
