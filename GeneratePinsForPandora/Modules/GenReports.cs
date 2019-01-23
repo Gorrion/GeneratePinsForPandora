@@ -109,41 +109,39 @@ namespace GeneratePinsForPandora.Modules
                         var eLineY = 1000;
                         var grafHeight = eLineY - 840;
                         var grafWidth = eLineX - sLineX + 5 - 20;
-                        // var grafHeight = 100;
+
                         if (data.GrafA.Length > 0)
                         {
                             var pdx = grafWidth / data.GrafA.Length;
                             for (var i = 0; i < data.GrafA.Length; i++)
                             {
                                 var dy = (int)Math.Round(grafHeight * (data.GrafA[i] * 100.0 / max) / 100.0);
-                                var stX = sLineX + 5 + i * 34;
+                                var stX = sLineX + 4 + i * 33;
 
-                                LinearGradientBrush linGrBrush = new LinearGradientBrush(
-                                   new Point(stX, eLineY - dy - 10),
-                                   new Point(stX, eLineY + 10),
-                                   Color.FromArgb(100, 255, 255, 255), 
-                                   Color.FromArgb(0, 255, 255, 255));  
+                                var colWidth = 4;
 
-                                Pen pen = new Pen(linGrBrush, 6);
-                                graphics.DrawLine(pen, new Point(stX, eLineY - dy), new Point(stX, eLineY));
+                                var rect = new Rectangle(stX, eLineY - dy, colWidth, dy);
+                                Brush linearGradientBrush = new LinearGradientBrush(
+                                    rect, Color.White, Color.Black, 45);
+
+                                graphics.FillRectangle(linearGradientBrush, new Rectangle(stX, eLineY - dy, colWidth, dy - 2));
 
                                 var b = new SolidBrush(Color.FromArgb(50, 154, 216));
-                                graphics.FillRectangle(b, stX - 3, eLineY - dy, 6, 6);
+                                graphics.FillRectangle(b, stX, eLineY - dy, colWidth, colWidth);
                             }
                         }
                     }
 
                     //График 2
                     {
-                        var max = (data.GrafB1.Length > 0 ? data.GrafB1.Max() : 0) +
-                                  (data.GrafB2.Length > 0 ? data.GrafB2.Max() : 0);
+                        var max = 211000;
+                        //(data.GrafB1.Length > 0 ? data.GrafB1.Max() : 0) +
+                        //          (data.GrafB2.Length > 0 ? data.GrafB2.Max() : 0);
 
-                        
                         graphics.DrawText("211К", 10, 722, 1235, color: Color.Gray);
                         graphics.DrawText("141К", 10, 722, 1284, color: Color.Gray);
                         graphics.DrawText("70К", 10, 722, 1318, color: Color.Gray);
 
-                        
                         var center = new Point(717, 1392);
                         var angCount = 360 / 24;
                         var radius = 160;
@@ -152,7 +150,6 @@ namespace GeneratePinsForPandora.Modules
                         {
                             var ang = angCount * i;
                             var proc = (x * 100.0 / max) / 100 * radius;
-                            
 
                             double angle2 = Math.PI * ang / 180.0;
                             var txtX = (int)(radius * Math.Sin(angle2));
@@ -161,14 +158,14 @@ namespace GeneratePinsForPandora.Modules
 
                             return MathExt.GetPointOnLine(center, pointOnCircle, (int)proc);
                         });
-                        
+
                         graphics.DrawPolygon(new Pen(Color.White, 2), pointsWhite.ToArray());
-                        
+
                         var pointsRed = data.GrafB2.Select((x, i) =>
                         {
                             var ang = angCount * i;
                             var proc = (x * 100.0 / max) / 100 * radius;
-                            
+
 
                             double angle2 = Math.PI * ang / 180.0;
                             var txtX = (int)(radius * Math.Sin(angle2));
@@ -177,11 +174,9 @@ namespace GeneratePinsForPandora.Modules
 
                             return MathExt.GetPointOnLine(center, pointOnCircle, (int)proc);
                         });
-                        
-                        graphics.DrawPolygon(new Pen(Color.Red, 2), pointsRed.ToArray());
-                        
-                    }
 
+                        graphics.DrawPolygon(new Pen(Color.Red, 2), pointsRed.ToArray());
+                    }
 
                     //График 3 (Кругоыой)
                     {
@@ -196,32 +191,29 @@ namespace GeneratePinsForPandora.Modules
                             topLeftX + width / 2 - 20 * 3, topLeftY + width / 2 - 10,
                             color: Color.FromArgb(217, 217, 217));
 
-                        var sum = data.GrafC.Sum(); //100%
+                        var sum = data.GrafC.Sum();
                         var colorArr = new[] {
-                        Color.FromArgb(255, 46,46),
-                        Color.FromArgb(255, 69,69),
-                        Color.FromArgb(255,163,163),
-                        Color.FromArgb(255, 212,212),
-                        Color.FromArgb(33,81,255),
-                        Color.FromArgb(46,147,255),
-                        Color.FromArgb(130,130,141),
-                        Color.FromArgb(227, 240, 255),
-                    };
-
+                            Color.FromArgb(255, 46,46),
+                            Color.FromArgb(255, 69,69),
+                            Color.FromArgb(255,163,163),
+                            Color.FromArgb(255, 212,212),
+                            Color.FromArgb(33,81,255),
+                            Color.FromArgb(46,147,255),
+                            Color.FromArgb(130,130,141),
+                            Color.FromArgb(227, 240, 255),
+                        };
 
                         float lastAngle = 0 - 90;
-                        var angleDx = 0;
+                        //var angleDx = 0;
                         for (var i = 0; i < data.GrafC.Length; i++)
                         {
                             var colorInd = (Math.Abs(i * colorArr.Length) + i) % colorArr.Length;
                             var color = colorArr[colorInd];//GraphicsExt.GetBlendedColor((int)procenrt);
 
                             var procenrt = data.GrafC[i] * 100.0 / sum;
-
                             var angle = (float)(360f * procenrt / 100);
 
                             //graphics.Dyga(new Pen(color, 10), 1300, 1400, 122,  lastAngle, lastAngle + angle);
-
                             graphics.DrawArc(new Pen(color, 12), topLeftX, topLeftY, width, width, lastAngle, angle);
 
                             //Подпись процентов
@@ -257,25 +249,16 @@ namespace GeneratePinsForPandora.Modules
                                     var title = data.GrafCT?[i];
                                     if (!string.IsNullOrWhiteSpace(title))
                                     {
-
-
                                         graphics.DrawText(title, 8, txtPoint.X, txtPoint.Y, 150, 60, color: Color.FromArgb(65, 65, 65), format: format);
                                     }
-
-
                                 }
                                 else
                                 {
                                     format.Alignment = StringAlignment.Near;
                                 }
 
-
-
-
                                 // if (angle < 20) angleDx += 15;
-
                             }
-
 
                             //{
                             //    var txtX = (int)Math.Floor(radius * Math.Cos(90));
@@ -283,7 +266,6 @@ namespace GeneratePinsForPandora.Modules
                             //    // graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
                             //    graphics.DrawLine(new Pen(color, 1), centr, new Point(centr.X + txtX, centr.Y - txtY));
                             //}
-
                             //{
                             //    var txtX = (int)Math.Floor(radius * Math.Cos(180));
                             //    var txtY = (int)Math.Floor(radius * Math.Sin(180));
