@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GeneratePinsForPandora.Lib;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 
 namespace GeneratePinsForPandora.Modules
 {
@@ -44,10 +45,10 @@ namespace GeneratePinsForPandora.Modules
             {
                 using (Graphics graphics = Graphics.FromImage(bg))
                 {
-                    graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                    graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                    graphics.CompositingQuality = CompositingQuality.HighQuality;
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graphics.SmoothingMode = SmoothingMode.HighQuality;
+                    graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
 
                     graphics.DrawText(data.Name, 16, 303, 654, color: Color.FromArgb(255, 2, 2));
 
@@ -166,7 +167,6 @@ namespace GeneratePinsForPandora.Modules
                             var ang = angCount * i;
                             var proc = (x * 100.0 / max) / 100 * radius;
 
-
                             double angle2 = Math.PI * ang / 180.0;
                             var txtX = (int)(radius * Math.Sin(angle2));
                             var txtY = (int)(radius * Math.Cos(angle2));
@@ -205,6 +205,7 @@ namespace GeneratePinsForPandora.Modules
 
                         float lastAngle = 0 - 90;
                         //var angleDx = 0;
+                        var prevRec = new Rectangle();
                         for (var i = 0; i < data.GrafC.Length; i++)
                         {
                             var colorInd = (Math.Abs(i * colorArr.Length) + i) % colorArr.Length;
@@ -221,44 +222,93 @@ namespace GeneratePinsForPandora.Modules
                             //var txtY = (int)Math.Floor(radius * Math.Cos(lastAngle + 90));
                             //// graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
                             //graphics.DrawLine(new Pen(color, 1), centr, new Point(centr.X - txtX, centr.Y - txtY));
+                            //{
+                            var angleTxt = lastAngle + 90 + (angle < 40 ? 0 : angle / 2);
+
+                            double angle2 = Math.PI * angleTxt / 180.0;
+                            var txtX = (int)(radius * Math.Sin(angle2));
+                            var txtY = (int)(radius * Math.Cos(angle2));
+
+                            //var txtX = Math.Sin((0 / 180D) * Math.PI); // (int)Math.Floor(radius * Math.Sin(0));
+                            //var txtY = (int)Math.Floor(radius * Math.Cos(0));
+                            // graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
+                            var pointOnCircle = new Point(centr.X + txtX, centr.Y - txtY);
+                            graphics.DrawLine(new Pen(color, 1), centr, pointOnCircle);
+
+                            //   if (angle > 20) angleDx = 0;
+
+                            var txtPoint = MathExt.GetPointOnLine(centr, pointOnCircle, radius + 20);
+                            using (var imgTxt = new Bitmap(120, 100))
                             {
-                                var angleTxt = lastAngle + 90 + angle / 10;
+                                using (Graphics gTxt = Graphics.FromImage(imgTxt))
+                                {
+                                    gTxt.CompositingQuality = CompositingQuality.HighQuality;
+                                    gTxt.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                    gTxt.SmoothingMode = SmoothingMode.HighQuality;
+                                    gTxt.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-                                double angle2 = Math.PI * angleTxt / 180.0;
-                                var txtX = (int)(radius * Math.Sin(angle2));
-                                var txtY = (int)(radius * Math.Cos(angle2));
+                                    gTxt.DrawText(procenrt.ToString("N2"), 12, 0, 0, imgTxt.Width, imgTxt.Height, color: Color.Red);
+                                    int lastEmptyRow = GetLastEmptyRowNum(imgTxt);
 
-                                //var txtX = Math.Sin((0 / 180D) * Math.PI); // (int)Math.Floor(radius * Math.Sin(0));
-                                //var txtY = (int)Math.Floor(radius * Math.Cos(0));
-                                // graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
-                                var pointOnCircle = new Point(centr.X + txtX, centr.Y - txtY);
-                                graphics.DrawLine(new Pen(color, 1), centr, pointOnCircle);
+                                    var title = data.GrafCT?[i];
+                                    if (!string.IsNullOrWhiteSpace(title) && lastEmptyRow >= 0)
+                                    {
+                                        StringFormat format = new StringFormat();
+                                        format.LineAlignment = StringAlignment.Near;
+                                        gTxt.DrawText(title.Replace("/", "/ "), 8, 0, lastEmptyRow, imgTxt.Width, imgTxt.Height,
+                                            color: Color.FromArgb(65, 65, 65), format: format);
+                                    }
 
-                                //   if (angle > 20) angleDx = 0;
+                                    lastEmptyRow = GetLastEmptyRowNum(imgTxt);
+                                    var maxX = GetLastEmptyColNum(imgTxt);
 
-                                var txtPoint = MathExt.GetPointOnLine(centr, pointOnCircle, radius + (angleTxt < 180 ? 25 : 50)); // (angle i % 2 == 0 ? 15 : 0));
+                                    graphics.DrawImage(imgTxt, txtPoint.X, txtPoint.Y);
 
-                                StringFormat format = new StringFormat();
+
+                                    imgTxt.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
+                                                            new[] { "reports", "test.png" }));
+
+
+                                    prevRec = new Rectangle(txtPoint.X, txtPoint.Y, maxX, lastEmptyRow);
+
+
+                                    //var imgRet = Bitmap.Fro
+
+                                }
+                            }
+
+
+
+                            // (angleTxt < 180 ? 25 : 50)); // (angle i % 2 == 0 ? 15 : 0));
+
+                            /*    StringFormat format = new StringFormat();
                                 format.LineAlignment = StringAlignment.Near;
 
                                 if (angleTxt < 180)
                                 {
                                     format.Alignment = StringAlignment.Near;
-                                    graphics.DrawText(procenrt.ToString("N2"), 12, txtPoint.X, txtPoint.Y - 16 - (angleTxt < 30 && i > 0 && i % 2 == 0 ? 20 : 0), 200, 60, color: Color.Red);
-
-                                    var title = data.GrafCT?[i];
-                                    if (!string.IsNullOrWhiteSpace(title))
+                                    if (txtPoint.X > prevRec.X && txtPoint.X < prevRec.X + prevRec.Width && txtPoint.Y > prevRec.Y && txtPoint.Y < prevRec.Y + prevRec.Height)
                                     {
-                                        graphics.DrawText(title, 8, txtPoint.X, txtPoint.Y, 150, 60, color: Color.FromArgb(65, 65, 65), format: format);
+                                        int newX = txtPoint.X, newY = txtPoint.Y;
+
+                                        txtPoint = new Point(txtPoint.X, prevRec.Y - 20);
                                     }
+
+                                    graphics.DrawText(procenrt.ToString("N2"), 12, txtPoint.X, txtPoint.Y); // - 16 - (angleTxt < 30 && i > 0 && i % 2 == 0 ? 20 : 0), 200, 60, color: Color.Red);
+
+                                    //var title = data.GrafCT?[i];
+                                    //if (!string.IsNullOrWhiteSpace(title))
+                                    //{
+                                    //    graphics.DrawText(title, 8, txtPoint.X, txtPoint.Y, 150, 60, color: Color.FromArgb(65, 65, 65), format: format);
+                                    //}
                                 }
                                 else
                                 {
                                     format.Alignment = StringAlignment.Near;
-                                }
+                                }*/
 
-                                // if (angle < 20) angleDx += 15;
-                            }
+                            // if (angle < 20) angleDx += 15;
+                            //}
 
                             //{
                             //    var txtX = (int)Math.Floor(radius * Math.Cos(90));
@@ -275,6 +325,8 @@ namespace GeneratePinsForPandora.Modules
 
                             lastAngle = lastAngle + angle;
                             //graphics.DrawCircle(new Pen(Color.FromArgb(33, 81, 255), 10), 1300, 1400, 122);
+
+                            // prevRec = new Rectangle(txtPoint.X, txtPoint.Y, 100, 20);
 
                         }
 
@@ -309,6 +361,34 @@ namespace GeneratePinsForPandora.Modules
                 bg.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
                     new[] { "reports", $"{data.Area}_{data.Type}.png" }));
             }
+        }
+
+        private static int GetLastEmptyRowNum(Bitmap img)
+        {
+            for (var row = img.Height - 1; row > 0; row--)
+            {
+                var isRowEmpty = true;
+                for (var col = 0; col < img.Width; col++)
+                {
+                    if (img.GetPixel(col, row).Name != "0") { return row; }
+                }
+            }
+
+            return -1;
+        }
+
+        private static int GetLastEmptyColNum(Bitmap img)
+        {
+            var intX = 0;
+            for (var row = img.Height - 1; row > 0; row--)
+            {
+                for (var col = img.Width - 1; col >= 0; col--)
+                {
+                    if (img.GetPixel(col, row).Name != "0" && col > intX) { intX = col; break; }
+                }
+            }
+
+            return intX;
         }
     }
 }
