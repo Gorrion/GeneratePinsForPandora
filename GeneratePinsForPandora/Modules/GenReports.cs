@@ -223,8 +223,8 @@ namespace GeneratePinsForPandora.Modules
                             //// graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
                             //graphics.DrawLine(new Pen(color, 1), centr, new Point(centr.X - txtX, centr.Y - txtY));
                             //{
-                            var angleTxt = lastAngle + 90 + (angle < 40 ? 0 : angle / 2);
-
+                            var angleTxt = lastAngle + 90 + (angle < 40 ? (lastAngle + 90 > 180 ? angle : 0 ) : angle / 2);
+                 
                             double angle2 = Math.PI * angleTxt / 180.0;
                             var txtX = (int)(radius * Math.Sin(angle2));
                             var txtY = (int)(radius * Math.Cos(angle2));
@@ -238,7 +238,7 @@ namespace GeneratePinsForPandora.Modules
                             //   if (angle > 20) angleDx = 0;
 
                             var txtPoint = MathExt.GetPointOnLine(centr, pointOnCircle, radius + 20);
-                            using (var imgTxt = new Bitmap(120, 100))
+                            using (var imgTxt = new Bitmap(150, 100))
                             {
                                 using (Graphics gTxt = Graphics.FromImage(imgTxt))
                                 {
@@ -247,14 +247,18 @@ namespace GeneratePinsForPandora.Modules
                                     gTxt.SmoothingMode = SmoothingMode.HighQuality;
                                     gTxt.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-                                    gTxt.DrawText(procenrt.ToString("N2"), 12, 0, 0, imgTxt.Width, imgTxt.Height, color: Color.Red);
+                                    StringFormat format = new StringFormat();
+
+                                    format.LineAlignment = StringAlignment.Near;
+                                    format.Alignment = angleTxt < 180 ? StringAlignment.Near : StringAlignment.Far;
+                                    
+                                    
+                                    gTxt.DrawText(procenrt.ToString("N2"), 12, 0, 0, imgTxt.Width, imgTxt.Height, color: Color.Red, format: format);
                                     int lastEmptyRow = GetLastEmptyRowNum(imgTxt);
 
                                     var title = data.GrafCT?[i];
                                     if (!string.IsNullOrWhiteSpace(title) && lastEmptyRow >= 0)
                                     {
-                                        StringFormat format = new StringFormat();
-                                        format.LineAlignment = StringAlignment.Near;
                                         gTxt.DrawText(title.Replace("/", "/ "), 8, 0, lastEmptyRow, imgTxt.Width, imgTxt.Height,
                                             color: Color.FromArgb(65, 65, 65), format: format);
                                     }
@@ -262,11 +266,21 @@ namespace GeneratePinsForPandora.Modules
                                     lastEmptyRow = GetLastEmptyRowNum(imgTxt);
                                     var maxX = GetLastEmptyColNum(imgTxt);
 
-                                    graphics.DrawImage(imgTxt, txtPoint.X, txtPoint.Y);
+                                    int dx = 0, dy = 0;
+                                    if (angleTxt < 60)
+                                    {
+                                        dx = 0;
+                                        dy = -lastEmptyRow;
+                                    } else if (angleTxt > 180)
+                                    {
+                                        dx = -maxX;
+                                    }
+                                    
+                                    graphics.DrawImage(imgTxt, txtPoint.X + dx, txtPoint.Y + dy);
 
 
-                                    imgTxt.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
-                                                            new[] { "reports", "test.png" }));
+                                   /*imgTxt.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
+                                                            new[] { "reports", "test.png" }));*/
 
 
                                     prevRec = new Rectangle(txtPoint.X, txtPoint.Y, maxX, lastEmptyRow);
