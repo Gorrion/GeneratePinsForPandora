@@ -223,7 +223,7 @@ namespace GeneratePinsForPandora.Modules
                             //// graphics.DrawText(procenrt.ToString(), 12, topLeftX + txtX, topLeftY + txtY, color: Color.Red);
                             //graphics.DrawLine(new Pen(color, 1), centr, new Point(centr.X - txtX, centr.Y - txtY));
                             //{
-                            var angleTxt = lastAngle + 90 + (angle < 40 ? (lastAngle + 90 > 180 ? angle : 0 ) : angle / 2);
+                            var angleTxt = lastAngle + 90 + (angle < 40 ? (lastAngle + 90 > 180 ? angle / 3 : angle * .2) : angle / 2);
                  
                             double angle2 = Math.PI * angleTxt / 180.0;
                             var txtX = (int)(radius * Math.Sin(angle2));
@@ -237,7 +237,7 @@ namespace GeneratePinsForPandora.Modules
 
                             //   if (angle > 20) angleDx = 0;
 
-                            var txtPoint = MathExt.GetPointOnLine(centr, pointOnCircle, radius + 20);
+                           
                             using (var imgTxt = new Bitmap(150, 100))
                             {
                                 using (Graphics gTxt = Graphics.FromImage(imgTxt))
@@ -269,18 +269,41 @@ namespace GeneratePinsForPandora.Modules
                                     int dx = 0, dy = 0;
                                     if (angleTxt < 60)
                                     {
+                                        //dx = (int)(maxX * .2);
+                                        //dy = (int)(-lastEmptyRow * .6);
+
                                         dx = 0;
                                         dy = -lastEmptyRow;
-                                    } else if (angleTxt > 180)
+                                    }
+                                    else if (angleTxt > 180)
                                     {
                                         dx = -maxX;
+
+                                        if (angleTxt > 315)
+                                        {
+                                            dy = -lastEmptyRow + 10;
+                                        }
                                     }
-                                    
-                                    graphics.DrawImage(imgTxt, txtPoint.X + dx, txtPoint.Y + dy);
+
+                                    var txtPoint = MathExt.GetPointOnLine(centr, pointOnCircle, radius + 20);
+
+                                    txtPoint = new Point(txtPoint.X + dx, txtPoint.Y + dy);
 
 
-                                   /*imgTxt.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
-                                                            new[] { "reports", "test.png" }));*/
+                                    if (txtPoint.X > prevRec.X && txtPoint.X < prevRec.X + prevRec.Width && txtPoint.Y > prevRec.Y && txtPoint.Y < prevRec.Y + prevRec.Height)
+                                    {
+                                        int newX = txtPoint.X, newY = prevRec.Y - lastEmptyRow;
+
+                                        txtPoint = new Point(newX, newY);
+                                    }
+
+                                    graphics.DrawImage(imgTxt, txtPoint.X, txtPoint.Y);
+
+
+                                    /*imgTxt.Save(string.Join(Path.DirectorySeparatorChar.ToString(),
+                                                             new[] { "reports", "test.png" }));*/
+
+
 
 
                                     prevRec = new Rectangle(txtPoint.X, txtPoint.Y, maxX, lastEmptyRow);
